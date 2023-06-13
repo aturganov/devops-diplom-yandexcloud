@@ -35,4 +35,11 @@
 Далее отработаем мониторинг. 
 Далее развернем Prod и накатим jenkins
 
+Обновляем terraform
+```
+locadm@netology01:~/git$ terraform -version
+Terraform v1.5.0
+on linux_amd64
+```
+
 
