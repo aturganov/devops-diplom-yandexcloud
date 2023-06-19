@@ -12,8 +12,9 @@ variable "folder_id" {
   default = "b1gkgthf18fqkuii66ht"
 }
 variable "zone" {
-  default = "ru-central1-b"
+  default = "ru-central1-a"
 }
+
 variable "user" {
   default = "locadm"
 }
@@ -28,3 +29,19 @@ variable "disk_image_id" {
 }
 
 # All VPS config
+
+# Основные
+
+# Раскидаем подсети по зонам
+variable "zone-manage" {
+  default = "ru-central1-a"
+}
+
+variable "zone-stage" {
+  default = "ru-central1-b"
+}
+
+variable "zone-prod" {
+  default = "ru-central1-c"
+}
+
