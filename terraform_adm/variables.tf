@@ -1,3 +1,5 @@
+
+# General
 variable "yandex_token" {
   description   = "yandex_token"
   type          = string
@@ -12,3 +14,34 @@ variable "folder_id" {
 variable "zone" {
   default = "ru-central1-a"
 }
+
+variable "user" {
+  default = "locadm"
+}
+variable "public_key_path" {
+  default = "~/.ssh/id_rsa.pub"
+}
+variable "private_key_path" {
+  default = "~/.ssh/id_rsa"
+}
+variable "disk_image_id" {
+  default = "fd87va5cc00gaq2f5qfb"
+}
+
+# All VPS config
+
+# Основные
+
+# Раскидаем подсети по зонам
+variable "zone-manage" {
+  default = "ru-central1-a"
+}
+
+variable "zone-stage" {
+  default = "ru-central1-b"
+}
+
+variable "zone-prod" {
+  default = "ru-central1-c"
+}
+
