@@ -21,12 +21,6 @@
 
 ---
 
-Прерываемая машина   
-
-scheduling_policy {
-    preemptible = true
-}
-
 ### Решение: 
 ### Создание облачной инфраструктуры
 
@@ -90,7 +84,7 @@ locadm@netology01:~/git/devops-diplom-yandexcloud/terraform_adm$ yc storage buck
    б. Альтернативный вариант: S3 bucket в созданном ЯО аккаунте
 ```
 Идем по s3
-Создал backend на базе бакета выше.
+Создал backend на базе бакета выше. В бакет сохраняется tfstate.
 ```
 [provider.tf](terraform/provider.tf)
 ![4.PNG](pics/4.PNG)
@@ -155,8 +149,12 @@ locadm@netology01:~/git/devops-diplom-yandexcloud/terraform$ yc vpc network list
 
 1. Рекомендуемый вариант: самостоятельная установка Kubernetes кластера.  
    а. При помощи Terraform подготовить как минимум 3 виртуальных машины Compute Cloud для создания Kubernetes-кластера. Тип виртуальной машины следует выбрать самостоятельно с учётом требовании к производительности и стоимости. Если в дальнейшем поймете, что необходимо сменить тип инстанса, используйте Terraform для внесения изменений.  
+   ```
+
+   ```   
    б. Подготовить [ansible](https://www.ansible.com/) конфигурации, можно воспользоваться, например [Kubespray](https://kubernetes.io/docs/setup/production-environment/tools/kubespray/)  
    в. Задеплоить Kubernetes на подготовленные ранее инстансы, в случае нехватки каких-либо ресурсов вы всегда можете создать их при помощи Terraform.
+
 2. Альтернативный вариант: воспользуйтесь сервисом [Yandex Managed Service for Kubernetes](https://cloud.yandex.ru/services/managed-kubernetes)  
   а. С помощью terraform resource для [kubernetes](https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/kubernetes_cluster) создать региональный мастер kubernetes с размещением нод в разных 3 подсетях      
   б. С помощью terraform resource для [kubernetes node group](https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/kubernetes_node_group)
@@ -168,5 +166,9 @@ locadm@netology01:~/git/devops-diplom-yandexcloud/terraform$ yc vpc network list
 3. Команда `kubectl get pods --all-namespaces` отрабатывает без ошибок.
 
 ---
+Прерываемая машина   
 
+scheduling_policy {
+    preemptible = true
+}
 
