@@ -4,6 +4,7 @@
 # Создаем публичуню VM, закидываем ssh-ключи и пользователя
 resource "yandex_compute_instance" "vm_stage_master" {
   name = "vm-stage-master"
+  hostname = "stage-master"
   allow_stopping_for_update = true
 
   platform_id = "standard-v1"
@@ -41,6 +42,7 @@ resource "yandex_compute_instance" "vm_stage_master" {
     content = tls_private_key.ssh-key.private_key_pem
     destination = pathexpand(var.private_key_path)
   }
+
   provisioner "remote-exec" {
     inline = [
       "chmod 600 /home/locadm/.ssh/id_rsa",
@@ -51,7 +53,9 @@ resource "yandex_compute_instance" "vm_stage_master" {
 # Создаем VM, закидываем ssh-ключи и пользователя
 resource "yandex_compute_instance" "vm_stage_workers" {
   count = 2
-  name = "vm-stage-workers-${count.index}"
+  name = "vm-stage-worker-${count.index}"
+  hostname = "stage-worker-${count.index}"
+
   allow_stopping_for_update = true
 
   platform_id = "standard-v1"
@@ -81,13 +85,14 @@ resource "yandex_compute_instance" "vm_stage_workers" {
     type = "ssh"
     user = var.user
     private_key = tls_private_key.ssh-key.private_key_openssh
-    host     = self.network_interface.0.nat_ip_address
+    host = self.network_interface.0.nat_ip_address
   }
 
   provisioner "file" {
     content = tls_private_key.ssh-key.private_key_pem
     destination = pathexpand(var.private_key_path)
   }
+  
   provisioner "remote-exec" {
     inline = [
       "chmod 600 /home/locadm/.ssh/id_rsa",

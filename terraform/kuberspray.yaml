@@ -1,0 +1,88 @@
+---
+  - name: Setting master-node
+    hosts: master
+    become: yes
+    tasks:
+
+      - name: create SSH key
+        become_user: root
+        user:
+          name: root
+          generate_ssh_key: yes
+          ssh_key_bits: 2048
+          ssh_key_file: .ssh/id_rsa
+
+      - name: read key file
+        become_user: root
+        shell: cat ~/.ssh/id_rsa.pub
+        register: key_content
+
+      - name: add authorized_keys
+        become_user: root
+        lineinfile:
+          path: "~/.ssh/authorized_keys"
+          line: "{{ key_content.stdout }}"
+
+      - name: copy authorized_keys
+        become_user: root
+        ansible.builtin.fetch:
+          src: ~/.ssh/authorized_keys
+          dest: ./.ansible/
+          flat: yes
+
+      - name: install packages
+        apt:
+          name:
+            - git
+          state: present
+
+      - name: install pip3
+        apt: name=python3-pip state=present 
+
+      - name: install and upgrade pip
+        pip:
+          name: pip
+          extra_args: --upgrade
+          executable: pip3
+
+      # На убунте python 3.8, новый кубспрей любит 3.9, понижаем версию до более менее стабильной
+      - name: download repo Kuberspray
+        become_user: root
+        ansible.builtin.git:
+          repo: 'https://github.com/kubernetes-sigs/kubespray.git'
+          dest: /root/kubespray
+          version: v2.18.2
+
+      - name: install requirements        
+        ansible.builtin.pip:
+          requirements: /root/kubespray/requirements.txt
+          executable: pip3
+
+      - name: add usr/local/bin in $PATH
+        become_user: root
+        lineinfile:
+          path: "~/.bashrc"
+          line: "export PATH=$PATH:/usr/local/bin"
+
+      - name: copy config kuberspray
+        become_user: root
+        shell: |
+          cd  ~/kubespray 
+          cp -rfp inventory/sample inventory/mycluster
+
+      - name: copy inventory.ini
+        become_user: root
+        ansible.builtin.copy:
+          src: ./.kubespray/inventory.ini
+          dest: ~/kubespray/inventory/mycluster
+
+  - name: settings worker nodes
+    hosts: nodes
+    become: yes
+    tasks:
+
+      - name: copy authorized_keys
+        become_user: root
+        ansible.builtin.copy:
+          src: ./.ansible/authorized_keys
+          dest: ~/.ssh/

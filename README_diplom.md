@@ -142,6 +142,69 @@ locadm@netology01:~/git/devops-diplom-yandexcloud/terraform$ yc vpc network list
 
 ---
 ### Создание Kubernetes кластера
+https://internet-lab.ru/k8s_kubespray
+
+```
+https://github.com/kubernetes-sigs/kubespray
+
+declare -a IPS=(192.168.10.21 192.168.10.32 192.168.10.35)
+CONFIG_FILE=./kubespray/inventory/mycluster/hosts.yaml python3 ~/kubespray/contrib/inventory_builder/inventory.py ${IPS[@]}
+
+
+ansible-playbook -i ./.ansible/inventory.ini kuberspray.yaml
+```
+
+```
+Sunday 25 June 2023  20:39:06 +0000 (0:00:00.145)       0:15:56.505 *********** 
+=============================================================================== 
+kubernetes/preinstall : Install packages requirements ------------------------------------------------------------- 37.71s
+network_plugin/calico : Wait for calico kubeconfig to be created -------------------------------------------------- 22.68s
+kubernetes/control-plane : Master | wait for kube-scheduler ------------------------------------------------------- 21.07s
+kubernetes/control-plane : kubeadm | Initialize first master ------------------------------------------------------ 19.68s
+kubernetes/kubeadm : Join to cluster ------------------------------------------------------------------------------ 16.86s
+kubernetes/preinstall : Update package management cache (APT) ----------------------------------------------------- 15.04s
+kubernetes-apps/ansible : Kubernetes Apps | Start Resources ------------------------------------------------------- 12.60s
+download : download_container | Download image if required -------------------------------------------------------- 11.76s
+kubernetes-apps/ansible : Kubernetes Apps | Lay Down CoreDNS templates -------------------------------------------- 11.28s
+download : download_container | Download image if required -------------------------------------------------------- 10.11s
+download : download_container | Download image if required --------------------------------------------------------- 9.87s
+kubernetes/preinstall : Preinstall | wait for the apiserver to be running ------------------------------------------ 7.78s
+network_plugin/calico : Start Calico resources --------------------------------------------------------------------- 7.12s
+container-engine/containerd : containerd | Unpack containerd archive ----------------------------------------------- 6.81s
+etcd : reload etcd ------------------------------------------------------------------------------------------------- 6.68s
+download : download_file | Download item --------------------------------------------------------------------------- 6.68s
+download : download_container | Download image if required --------------------------------------------------------- 6.43s
+network_plugin/calico : Calico | Create calico manifests ----------------------------------------------------------- 6.33s
+container-engine/containerd : download_file | Download item -------------------------------------------------------- 6.27s
+container-engine/crictl : extract_file | Unpacking archive --------------------------------------------------------- 6.09s
+```
+```
+ansible-playbook ~/kubespray/cluster.yml -i ~/kubespray/inventory/mycluster/inventory.ini --diff
+```
+
+
+```
+root@stage-master:~/kubespray# kubectl get pods --all-namespaces
+NAMESPACE     NAME                                      READY   STATUS    RESTARTS        AGE
+kube-system   calico-kube-controllers-6dfcdfb99-whhl6   1/1     Running   0               5m
+kube-system   calico-node-6j92v                         1/1     Running   0               5m55s
+kube-system   calico-node-d6q2t                         1/1     Running   0               5m55s
+kube-system   calico-node-nm89p                         1/1     Running   0               5m55s
+kube-system   coredns-645b46f4b6-w6qtk                  1/1     Running   0               4m27s
+kube-system   coredns-645b46f4b6-x9jgc                  1/1     Running   0               4m34s
+kube-system   dns-autoscaler-659b8c48cb-78lj2           1/1     Running   0               4m29s
+kube-system   kube-apiserver-node1                      1/1     Running   1               7m57s
+kube-system   kube-controller-manager-node1             1/1     Running   2               7m58s
+kube-system   kube-proxy-677kv                          1/1     Running   0               6m38s
+kube-system   kube-proxy-7lzjt                          1/1     Running   0               6m38s
+kube-system   kube-proxy-qlvt4                          1/1     Running   0               6m38s
+kube-system   kube-scheduler-node1                      1/1     Running   2 (7m32s ago)   7m55s
+kube-system   nginx-proxy-node2                         1/1     Running   0               5m35s
+kube-system   nginx-proxy-node3                         1/1     Running   0               5m37s
+kube-system   nodelocaldns-c6tf5                        1/1     Running   0               4m26s
+kube-system   nodelocaldns-r7s8c                        1/1     Running   0               4m26s
+kube-system   nodelocaldns-zvl62                        1/1     Running   0               4m26s
+```
 
 На этом этапе необходимо создать [Kubernetes](https://kubernetes.io/ru/docs/concepts/overview/what-is-kubernetes/) кластер на базе предварительно созданной инфраструктуры.   Требуется обеспечить доступ к ресурсам из Интернета.
 
