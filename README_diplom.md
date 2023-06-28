@@ -208,6 +208,14 @@ kube-system   nodelocaldns-zvl62                        1/1     Running   0     
 
 На этом этапе необходимо создать [Kubernetes](https://kubernetes.io/ru/docs/concepts/overview/what-is-kubernetes/) кластер на базе предварительно созданной инфраструктуры.   Требуется обеспечить доступ к ресурсам из Интернета.
 
+```
+!!! Добавить IP
+k8s-cluster.yml 
+## Supplementary addresses that can be added in kubernetes ssl keys.
+## That can be useful for example to setup a keepalived virtual IP
+supplementary_addresses_in_ssl_keys: [51.250.105.5]
+```
+
 Это можно сделать двумя способами:
 
 1. Рекомендуемый вариант: самостоятельная установка Kubernetes кластера.  

@@ -33,9 +33,12 @@ resource "local_file" "k8s-kubespray" {
   ]
 }
 
+    # node1 ansible_host=${yandex_compute_instance.vm_stage_master.network_interface.0.ip_address} ip=${yandex_compute_instance.vm_stage_master.network_interface.0.ip_address} access_ip=${yandex_compute_instance.vm_stage_master.network_interface.0.nat_ip_address}
+
+
 resource "null_resource" "pre_kubespray" {
   provisioner "local-exec" {
-    command = "ansible-playbook -i ./.ansible/inventory.ini kuberspray.yaml"
+    command = "ansible-playbook -i ./.ansible/inventory.ini kubespray.yaml"
   }
 
   depends_on = [
@@ -68,10 +71,12 @@ resource "null_resource" "pre_kubespray" {
 
 # resource "null_resource" "get-k8s-config" {
 #     provisioner "local-exec" {
-#     command = "ansible-playbook -i ./.ansible/inventory.ini k8s_config.yaml"
+#     command = "ansible-playbook -i ./.ansible/inventory.ini k8s_config.yaml --extra-vars '{"external_ip":"yandex_compute_instance.vm_stage_master.network_interface.0.ip_address"}'"
 #   }
 
 #   depends_on = [
 #     null_resource.install-remote-kubespray
 #   ]
 # }
+
+# ansible-playbook -i ./.ansible/inventory.ini k8s_config.yaml --extra-vars '{"external_ip":"51.250.105.5"}'
