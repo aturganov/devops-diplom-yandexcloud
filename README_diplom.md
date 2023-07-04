@@ -263,6 +263,9 @@ https://hub.docker.com/repository/docker/aturganov/nginx-stage/general
 Репозиторий:
 https://github.com/aturganov/dip_nginx
 
+Проблема с подключение к хосту git, добавляем хост на локальную машину
+ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+
 Деплой:
 
 locadm@netology01:~/git/devops-diplom-yandexcloud/terraform$ kubectl create deploy nginx --image=aturganov/nginx-stage:latest --replicas=3
