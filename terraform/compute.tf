@@ -18,7 +18,7 @@ resource "yandex_compute_instance" "vm_stage_master" {
   boot_disk {
     initialize_params {
       image_id = "${data.yandex_compute_image.my_image.id}"
-      size     = 20
+      size     = 40
     }
   }
   network_interface {
@@ -64,12 +64,12 @@ resource "yandex_compute_instance" "vm_stage_workers" {
 
   resources {
     cores = 2
-    memory = 2
+    memory = 4
   }
   boot_disk {
     initialize_params {
       image_id = "${data.yandex_compute_image.my_image.id}"
-      size     = 10
+      size     = 30
     }
   }
   network_interface {

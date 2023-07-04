@@ -1,0 +1,32 @@
+---
+  # ansible-playbook -i ./.ansible/inventory.ini kube_prometeus.yml
+  # Запуск после установки kubespray
+  - name: master-node
+    hosts: master
+    become: yes
+    tasks:
+      # cкачиваем 
+      - name: download repo kube-prometheus
+        become_user: root
+        ansible.builtin.git:
+          repo: 'https://github.com/prometheus-operator/kube-prometheus.git'
+          dest: /root/kube-prometheus
+          version: v0.11.0
+
+# curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+# sudo apt-get install apt-transport-https --yes
+# echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+# sudo apt-get update
+# sudo apt-get install helm
+
+# https://github.com/prometheus-community/helm-charts
+
+# helm show values prometheus-community/kube-prometheus-stack > src/deploy/kube-prometheus/values.yaml
+# helm show values prometheus-community/kube-prometheus-stack > src/deploy/kube-prometheus/values.yaml
+
+# kubectl create namespace monitoring
+
+# helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring -f ~/kube-prometheus/values.yaml 
+
+
+

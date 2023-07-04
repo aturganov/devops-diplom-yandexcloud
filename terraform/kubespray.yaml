@@ -4,6 +4,12 @@
     become: yes
     tasks:
 
+      - name: swapoff
+        ansible.builtin.command: swapoff -a
+
+      - name: set swapoff startup
+        ansible.builtin.command: sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab   
+
       - name: create SSH key
         become_user: root
         user:
@@ -37,7 +43,10 @@
           state: present
 
       - name: install pip3
-        apt: name=python3-pip state=present 
+        apt: 
+          name: python3-pip 
+          state: present 
+          update_cache: true
 
       - name: install and upgrade pip
         pip:
@@ -75,6 +84,20 @@
         ansible.builtin.copy:
           src: ./.kubespray/inventory.ini
           dest: ~/kubespray/inventory/mycluster
+
+      - name: add external ip
+        become_user: root
+        ansible.builtin.replace:
+          path: /root/kubespray/inventory/mycluster/group_vars/k8s_cluster/k8s-cluster.yml
+          regexp: '10.0.0.1, 10.0.0.2, 10.0.0.3'
+          replace: '{{ external_ip }}'   
+      
+      - name: add external ip2
+        become_user: root
+        ansible.builtin.replace:
+          path: /root/kubespray/inventory/mycluster/group_vars/k8s_cluster/k8s-cluster.yml
+          regexp: '# supplementary_addresses_in_ssl_keys'
+          replace: 'supplementary_addresses_in_ssl_keys'         
 
   - name: settings worker nodes
     hosts: nodes
