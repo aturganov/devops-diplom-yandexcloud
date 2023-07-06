@@ -22,5 +22,14 @@ kubectl --namespace=devops-tools logs jenkins-b96f7764f-7w2pw
 
 # kubectl exec -it -n devops-tools jenkins-559d8cd85c-cfcgk cat /var/jenkins_home/secrets/initialAdminPassword
 
-79c7e7d7c4904df7aaef38bcc47394d8
+# 79c7e7d7c4904df7aaef38bcc47394d8
 
+kubectl -n devops-tools get secret jenkins-admin-token-rbcr2 -o go-template --template '{{index .data "token"}}' | base64 -d ; echo
+
+# https://devopscube.com/jenkins-build-agents-kubernetes/   
+# https://51.250.103.200:6443
+
+
+kubectl logs dip-pipe-master-9-mctxq-33v7t-tgtdt -n devops-tools
+
+# https://sweetcode.io/how-to-build-and-push-docker-images-to-docker-hub-using-jenkins-pipeline/
