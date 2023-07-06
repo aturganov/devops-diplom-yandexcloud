@@ -1,0 +1,17 @@
+replicaCount: 1
+
+app_nginx_deployment:
+  image:
+    repository: aturganov/nginx-stage2:0.0.2
+    tag: latest
+  resources:
+    requests: 
+      memory: "80Mi"
+      cpu: "100m"
+    limits:
+      memory: "128Mi"
+      cpu: "128m"
+  replicaCount: 3
+
+app_nginx_service:
+  nodeport: 31000

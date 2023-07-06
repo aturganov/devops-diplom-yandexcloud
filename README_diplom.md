@@ -429,6 +429,40 @@ kubectl get secret --namespace monitoring
 locadm@netology01:~/git/devops-diplom-yandexcloud/terraform$ kubectl get secret --namespace monitoring prometheus-grafana -o jsonpath="
 {.data.admin-password}" | base64 --decode ; echo
 prom-operator
+```
+APPLICATION
+```
+locadm@netology01:~/git/devops-diplom-yandexcloud$ helm upgrade --install app-nginx ./helm_app/charts/app-nginx
+Release "app-nginx" has been upgraded. Happy Helming!
+NAME: app-nginx
+LAST DEPLOYED: Wed Jul  5 15:55:10 2023
+NAMESPACE: default
+STATUS: deployed
+REVISION: 3
+TEST SUITE: None
 
+locadm@netology01:~/git/devops-diplom-yandexcloud$ kubectl get all -n stage
+NAME                                       READY   STATUS    RESTARTS   AGE
+pod/app-nginx-app-nginx-59d7dcdfb9-2pmtn   1/1     Running   0          77s
+pod/app-nginx-app-nginx-59d7dcdfb9-srtdg   1/1     Running   0          77s
+pod/app-nginx-app-nginx-59d7dcdfb9-tp2p7   1/1     Running   0          77s
+
+NAME                TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+service/app-nginx   NodePort   10.233.0.138   <none>        80:31000/TCP   77s
+
+NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/app-nginx-app-nginx   3/3     3            3           77s
+
+NAME                                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/app-nginx-app-nginx-59d7dcdfb9   3         3         3       77s
+
+kubectl exec app-nginx-app-nginx-59d7dcdfb9-2pmtn curl localhost
+
+https://hub.docker.com/repository/docker/aturganov/nginx-stage2/general
+
+```
+locadm@netology01:~/git/devops-diplom-yandexcloud$ kubectl apply -f jenkins/jenkins-volume.yaml
+persistentvolume/jenkins-pv created
+storageclass.storage.k8s.io/jenkins-pv created
 
 ```
