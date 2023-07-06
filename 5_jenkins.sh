@@ -27,3 +27,9 @@ kubectl delete -f jenkins/jenkins-sa.yaml
 chart=jenkinsci/jenkins
 helm install jenkins -n jenkins -f jenkins/jenkins-values.yaml $chart
 
+
+#    
+docker build . -t aturganov/jenkins-docker -f dockerfile.local
+docker push aturganov/jenkins-docker
+
+docker run -d --name jenkins-docker -p 8080:8080 -v /var/run/docker.sock:/var/run/docker.sock aturganov/jenkins-docker
