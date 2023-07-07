@@ -29,7 +29,7 @@ RUN cp ./kubectl /usr/local/bin
 RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 \
     && chmod +x get_helm.sh && ./get_helm.sh
 
-RUN -y apt-get install vim
-RUN -y apt-get install htop
+RUN apt-get -y install vim
+RUN apt-get -y install htop
 
 USER jenkins
