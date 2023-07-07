@@ -44,36 +44,3 @@ resource "null_resource" "pre_kubespray" {
     local_file.k8s-kubespray
   ]
 }
-
-# resource "null_resource" "install-remote-kubespray" {
-
-#   connection {
-#     type = "ssh"
-#     user = var.user
-#     private_key = tls_private_key.ssh-key.private_key_openssh
-#     host = yandex_compute_instance.vm_stage_master.network_interface.0.nat_ip_address
-#   }
-
-#   # Логи запуска неинформативны, лучше запуск вручную
-#   provisioner "remote-exec" {
-#     inline = [  
-#       "sudo -i",
-#       "ansible-playbook ~/kubespray/cluster.yml -i ~/kubespray/inventory/mycluster/inventory.ini --diff" 
-#     ]
-#   }
-
-#   depends_on = [
-#     null_resource.pre_kubespray
-#   ]
-# }
-
-# ansible-playbook -i ./.ansible/inventory.ini k8s_config.yaml --extra-vars '{"external_ip":"51.250.103.200", "ansible_sudo_pass":"Temp001"}'
-# resource "null_resource" "get-k8s-config" {
-#     provisioner "local-exec" {
-#     command = "ansible-playbook -i ./.ansible/inventory.ini k8s_config.yaml --extra-vars '{"external_ip":"yandex_compute_instance.vm_stage_master.network_interface.0.ip_address"}' --ask-sudo-pass"
-#   }
-
-#   depends_on = [
-#     null_resource.install-remote-kubespray
-#   ]
-# }

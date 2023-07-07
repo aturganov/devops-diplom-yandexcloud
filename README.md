@@ -20,7 +20,7 @@
 6. Настроить CD для автоматического развёртывания приложения.
 
 ---
-### Создание облачной инфраструктуры
+## Создание облачной инфраструктуры
 <details><summary> Задание </summary>
 
 Для начала необходимо подготовить облачную инфраструктуру в ЯО при помощи [Terraform](https://www.terraform.io/).
@@ -49,13 +49,13 @@
 > 1. Terraform сконфигурирован и создание инфраструктуры посредством Terraform возможно без дополнительных ручных действий.
 > 2. Полученная конфигурация инфраструктуры является предварительной, поэтому в ходе дальнейшего выполнения задания возможны изменения.
 
-### - [x] Подход
+### - Подход
 Бюджет ограничен, поэтому на кластер выделю 3 машины (мастер, 2 ноды).
 До окончания установки и освоения Куберсластера: 2 CPU 4 RAМ 30 GB, 2 CPU 2 RAМ 20GB
 Далее с ростом загрузки кластера сервера повышаем вокеры до 2 CPU 4 RAМ 40 GB
 На этапе построения мониторинга, CI/CD при необходимости добавлю 1/2 ноды под отдельностоящие, либо кластерные ноды.
 
-### - [x] Подготовка локальной машины
+### - Подготовка локальной машины
 Работы будут проводится с локальной машины, обновим:
 ```
 locadm@netology01:~/git/devops-diplom-yandexcloud$ yc version
@@ -110,8 +110,7 @@ locadm@netology01:~/git/devops-diplom-yandexcloud$ yc storage bucket list
 +------------+----------------------+----------+-----------------------+---------------------+
 ```
 
-
-### - [x] Подготовка инфры к минимальному кластеру k8s
+### - Подготовка инфры к минимальному кластеру k8s
 
 Сценарий:
 
@@ -144,51 +143,67 @@ stage prod manage (service)
       * Установка Python
       * Установка kubspray
       * Предподготовка конфигов Kubespray
+         * Включение инвентаря с tf прошлого раздела
+         * k8s-cluster.yml добавление supplementary_addresses_in_ssl_keys
+         для внешнего доступа
       [kubespray](k8s/kubespray.yaml)
 
+Проверяем apply/destoy
+![apply](src/apply.PNG)
+![destroу](src/destoy.PNG)
+
+```
+locadm@netology01:~/git/devops-diplom-yandexcloud$ yc compute instance list
++----------------------+-------------------+---------------+---------+----------------+---------------+
+|          ID          |       NAME        |    ZONE ID    | STATUS  |  EXTERNAL IP   |  INTERNAL IP  |
++----------------------+-------------------+---------------+---------+----------------+---------------+
+| epd1l398kq3224f0rcj1 | vm-stage-worker-1 | ru-central1-b | RUNNING | 84.252.139.87  | 192.168.10.17 |
+| epdiish5p67373upmq23 | vm-stage-master   | ru-central1-b | RUNNING | 51.250.103.200 | 192.168.10.21 |
+| epdplqs8daiqnr1kdenl | vm-stage-worker-0 | ru-central1-b | RUNNING | 51.250.28.121  | 192.168.10.13 |
++----------------------+-------------------+---------------+---------+----------------+---------------+
+```
+
 ---
-### Создание Kubernetes кластера
-https://internet-lab.ru/k8s_kubespray
+## Создание Kubernetes кластера
+<details><summary> Задание </summary>
+На этом этапе необходимо создать [Kubernetes](https://kubernetes.io/ru/docs/concepts/overview/what-is-kubernetes/) кластер на базе предварительно созданной инфраструктуры.   Требуется обеспечить доступ к ресурсам из Интернета.
 
-```
-https://github.com/kubernetes-sigs/kubespray
+Это можно сделать двумя способами:
 
-declare -a IPS=(192.168.10.21 192.168.10.32 192.168.10.35)
-CONFIG_FILE=./kubespray/inventory/mycluster/hosts.yaml python3 ~/kubespray/contrib/inventory_builder/inventory.py ${IPS[@]}
+1. Рекомендуемый вариант: самостоятельная установка Kubernetes кластера.  
+   а. При помощи Terraform подготовить как минимум 3 виртуальных машины Compute Cloud для создания Kubernetes-кластера. Тип виртуальной машины следует выбрать самостоятельно с учётом требовании к производительности и стоимости. Если в дальнейшем поймете, что необходимо сменить тип инстанса, используйте Terraform для внесения изменений.  
+   б. Подготовить [ansible](https://www.ansible.com/) конфигурации, можно воспользоваться, например [Kubespray](https://kubernetes.io/docs/setup/production-environment/tools/kubespray/)  
+   в. Задеплоить Kubernetes на подготовленные ранее инстансы, в случае нехватки каких-либо ресурсов вы всегда можете создать их при помощи Terraform.
+2. Альтернативный вариант: воспользуйтесь сервисом [Yandex Managed Service for Kubernetes](https://cloud.yandex.ru/services/managed-kubernetes)  
+  а. С помощью terraform resource для [kubernetes](https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/kubernetes_cluster) создать региональный мастер kubernetes с размещением нод в разных 3 подсетях      
+  б. С помощью terraform resource для [kubernetes node group](https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/kubernetes_node_group)
+  </details>
 
+>Ожидаемый результат:
+>
+>1. Работоспособный Kubernetes кластер.
+>2. В файле `~/.kube/config` находятся данные для доступа к кластеру.
+>3. Команда `kubectl get pods --all-namespaces` отрабатывает без ошибок.
 
-ansible-playbook -i ./.ansible/inventory.ini kuberspray.yaml
-```
+## Подход
+Ставим кубер на минимальную инфру путем kubespray.
+Извлекаем конфиги для внешнего подключения.
 
-```
-Sunday 25 June 2023  20:39:06 +0000 (0:00:00.145)       0:15:56.505 *********** 
-=============================================================================== 
-kubernetes/preinstall : Install packages requirements ------------------------------------------------------------- 37.71s
-network_plugin/calico : Wait for calico kubeconfig to be created -------------------------------------------------- 22.68s
-kubernetes/control-plane : Master | wait for kube-scheduler ------------------------------------------------------- 21.07s
-kubernetes/control-plane : kubeadm | Initialize first master ------------------------------------------------------ 19.68s
-kubernetes/kubeadm : Join to cluster ------------------------------------------------------------------------------ 16.86s
-kubernetes/preinstall : Update package management cache (APT) ----------------------------------------------------- 15.04s
-kubernetes-apps/ansible : Kubernetes Apps | Start Resources ------------------------------------------------------- 12.60s
-download : download_container | Download image if required -------------------------------------------------------- 11.76s
-kubernetes-apps/ansible : Kubernetes Apps | Lay Down CoreDNS templates -------------------------------------------- 11.28s
-download : download_container | Download image if required -------------------------------------------------------- 10.11s
-download : download_container | Download image if required --------------------------------------------------------- 9.87s
-kubernetes/preinstall : Preinstall | wait for the apiserver to be running ------------------------------------------ 7.78s
-network_plugin/calico : Start Calico resources --------------------------------------------------------------------- 7.12s
-container-engine/containerd : containerd | Unpack containerd archive ----------------------------------------------- 6.81s
-etcd : reload etcd ------------------------------------------------------------------------------------------------- 6.68s
-download : download_file | Download item --------------------------------------------------------------------------- 6.68s
-download : download_container | Download image if required --------------------------------------------------------- 6.43s
-network_plugin/calico : Calico | Create calico manifests ----------------------------------------------------------- 6.33s
-container-engine/containerd : download_file | Download item -------------------------------------------------------- 6.27s
-container-engine/crictl : extract_file | Unpacking archive --------------------------------------------------------- 6.09s
-```
+Сценарий:
+* Запуск kubespray на мастере с преподготовленным на предущей стадии настроек k8s
 ```
 ansible-playbook ~/kubespray/cluster.yml -i ~/kubespray/inventory/mycluster/inventory.ini --diff
 ```
+* Пробрасываем конфиг kubectl на локальную машину с мастера плейбуком
+[k8s_cluster.yaml](k8s/k8s_config.yaml)
+```
+locadm@netology01:~/git/devops-diplom-yandexcloud$ kubectl cluster-info
+Kubernetes control plane is running at https://51.250.103.200:6443
+```
+Внешние подключение
+![k8s_cluster_info.PNG](src/k8s_cluster_info.PNG)
 
-
+Поды:
 ```
 root@stage-master:~/kubespray# kubectl get pods --all-namespaces
 NAMESPACE     NAME                                      READY   STATUS    RESTARTS        AGE
@@ -211,54 +226,25 @@ kube-system   nodelocaldns-c6tf5                        1/1     Running   0     
 kube-system   nodelocaldns-r7s8c                        1/1     Running   0               4m26s
 kube-system   nodelocaldns-zvl62                        1/1     Running   0               4m26s
 ```
+---
+### Создание тестового приложения
+<details><summary> Задание </summary>
 
-На этом этапе необходимо создать [Kubernetes](https://kubernetes.io/ru/docs/concepts/overview/what-is-kubernetes/) кластер на базе предварительно созданной инфраструктуры.   Требуется обеспечить доступ к ресурсам из Интернета.
+Для перехода к следующему этапу необходимо подготовить тестовое приложение, эмулирующее основное приложение разрабатываемое вашей компанией.
 
-```
-!!! Добавить IP
-k8s-cluster.yml 
-## Supplementary addresses that can be added in kubernetes ssl keys.
-## That can be useful for example to setup a keepalived virtual IP
-supplementary_addresses_in_ssl_keys: [51.250.105.5]
-```
+Способ подготовки:
 
-```
-https://cloud.yandex.com/en/docs/container-registry/operations/registry/registry-create
-```
+1. Рекомендуемый вариант:  
+   а. Создайте отдельный git репозиторий с простым nginx конфигом, который будет отдавать статические данные.  
+   б. Подготовьте Dockerfile для создания образа приложения.  
+2. Альтернативный вариант:  
+   а. Используйте любой другой код, главное, чтобы был самостоятельно создан Dockerfile.
+</details>
 
-Это можно сделать двумя способами:
-
-1. Рекомендуемый вариант: самостоятельная установка Kubernetes кластера.  
-   а. При помощи Terraform подготовить как минимум 3 виртуальных машины Compute Cloud для создания Kubernetes-кластера. Тип виртуальной машины следует выбрать самостоятельно с учётом требовании к производительности и стоимости. Если в дальнейшем поймете, что необходимо сменить тип инстанса, используйте Terraform для внесения изменений.  
-   ```
-
-   ```   
-   б. Подготовить [ansible](https://www.ansible.com/) конфигурации, можно воспользоваться, например [Kubespray](https://kubernetes.io/docs/setup/production-environment/tools/kubespray/)  
-   в. Задеплоить Kubernetes на подготовленные ранее инстансы, в случае нехватки каких-либо ресурсов вы всегда можете создать их при помощи Terraform.
-
-2. Альтернативный вариант: воспользуйтесь сервисом [Yandex Managed Service for Kubernetes](https://cloud.yandex.ru/services/managed-kubernetes)  
-  а. С помощью terraform resource для [kubernetes](https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/kubernetes_cluster) создать региональный мастер kubernetes с размещением нод в разных 3 подсетях      
-  б. С помощью terraform resource для [kubernetes node group](https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/kubernetes_node_group)
-
-  ```
-  Открываем доступ извне
-  ip-forward не включен
-Включаем форвард
-sudo -iip
-modprobe br_netfilter 
-echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
-echo "net.bridge.bridge-nf-call-iptables=1" >> /etc/sysctl.conf
-echo "net.bridge.bridge-nf-call-arptables=1" >> /etc/sysctl.conf
-echo "net.bridge.bridge-nf-call-ip6tables=1" >> /etc/sysctl.conf
-echo 1 > /proc/sys/net/ipv4/ip_forward
-  ```
-  
-Ожидаемый результат:
-
-1. Работоспособный Kubernetes кластер.
-2. В файле `~/.kube/config` находятся данные для доступа к кластеру.
-3. Команда `kubectl get pods --all-namespaces` отрабатывает без ошибок.
-
+>Ожидаемый результат:
+>
+>1. Git репозиторий с тестовым приложением и Dockerfile.
+>2. Регистр с собранным docker image. В качестве регистра может быть DockerHub или [Yandex Container Registry](https://cloud.yandex.ru/services/container-registry), созданный также с помощью terraform.
 
 ```
 docker build . -t aturganov/nginx-stage
@@ -310,8 +296,32 @@ locadm@
 ```
 
 
+---
+### Подготовка cистемы мониторинга и деплой приложения
+<details><summary> Задача </summary>
+Уже должны быть готовы конфигурации для автоматического создания облачной инфраструктуры и поднятия Kubernetes кластера.  
+Теперь необходимо подготовить конфигурационные файлы для настройки нашего Kubernetes кластера.
 
+Цель:
+1. Задеплоить в кластер [prometheus](https://prometheus.io/), [grafana](https://grafana.com/), [alertmanager](https://github.com/prometheus/alertmanager), [экспортер](https://github.com/prometheus/node_exporter) основных метрик Kubernetes.
+2. Задеплоить тестовое приложение, например, [nginx](https://www.nginx.com/) сервер отдающий статическую страницу.
 
+Рекомендуемый способ выполнения:
+1. Воспользовать пакетом [kube-prometheus](https://github.com/prometheus-operator/kube-prometheus), который уже включает в себя [Kubernetes оператор](https://operatorhub.io/) для [grafana](https://grafana.com/), [prometheus](https://prometheus.io/), [alertmanager](https://github.com/prometheus/alertmanager) и [node_exporter](https://github.com/prometheus/node_exporter). При желании можете собрать все эти приложения отдельно.
+2. Для организации конфигурации использовать [qbec](https://qbec.io/), основанный на [jsonnet](https://jsonnet.org/). Обратите внимание на имеющиеся функции для интеграции helm конфигов и [helm charts](https://helm.sh/)
+3. Если на первом этапе вы не воспользовались [Terraform Cloud](https://app.terraform.io/), то задеплойте в кластер [atlantis](https://www.runatlantis.io/) для отслеживания изменений инфраструктуры.
+
+Альтернативный вариант:
+1. Для организации конфигурации можно использовать [helm charts](https://helm.sh/)
+</detail>
+
+>Ожидаемый результат:
+>1. Git репозиторий с конфигурационными файлами для настройки Kubernetes.
+>2. Http доступ к web интерфейсу grafana.
+>3. Дашборды в grafana отображающие состояние Kubernetes кластера.
+>4. Http доступ к тестовому приложению.
+
+```
 root@node1:~/kube-prometheus# helm version
 version.BuildInfo{Version:"v3.12.1", GitCommit:"f32a527a060157990e2aa86bf45010dfb3cc8b8d", GitTreeState:"clean", GoVersion:"go1.20.4"}
 
@@ -358,6 +368,8 @@ kube-node-lease   Active   5h26m
 kube-public       Active   5h26m
 kube-system       Active   5h26m
 monitoring        Active   69s
+```
+
 
 kubectl wait --for=condition=Established --all CustomResourceDefinition --namespace=monitoring
 root@stage-master:~/kube-prometheus# kubectl wait --for=condition=Established --all CustomResourceDefinition --namespace=monitoring
@@ -465,6 +477,19 @@ replicaset.apps/app-nginx-app-nginx-59d7dcdfb9   3         3         3       77s
 kubectl exec app-nginx-app-nginx-59d7dcdfb9-2pmtn curl localhost
 
 https://hub.docker.com/repository/docker/aturganov/nginx-stage2/general
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```
 locadm@netology01:~/git/devops-diplom-yandexcloud$ kubectl apply -f jenkins/jenkins-volume.yaml
