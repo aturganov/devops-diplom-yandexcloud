@@ -1,0 +1,329 @@
+Started by user Турганов Артем Иванович
+Connecting to https://api.github.com using git-pssw
+Obtained Jenkinsfile from 5e9cc515a2c8fd5f76882407612ff6b785d88d4a
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/dip-pipe_stage
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+The recommended git tool is: NONE
+using credential git-pssw
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/dip-pipe_stage/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/aturganov/dip_nginx.git # timeout=10
+Fetching without tags
+Fetching upstream changes from https://github.com/aturganov/dip_nginx.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.30.2'
+using GIT_ASKPASS to set credentials 
+ > git fetch --no-tags --force --progress -- https://github.com/aturganov/dip_nginx.git +refs/heads/stage:refs/remotes/origin/stage # timeout=10
+Checking out Revision 5e9cc515a2c8fd5f76882407612ff6b785d88d4a (stage)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 5e9cc515a2c8fd5f76882407612ff6b785d88d4a # timeout=10
+Commit message: "version"
+ > git rev-list --no-walk 5fa56922c1f75a01599ce72411af01dfe91661a6 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $DOCKERHUB_CREDENTIALS or $DOCKERHUB_CREDENTIALS_USR or $DOCKERHUB_CREDENTIALS_PSW
+[Pipeline] {
+[Pipeline] withEnv
+Warning: A secret was passed to "withEnv" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [DOCKERHUB_CREDENTIALS_USR]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Prerequisites)
+[Pipeline] sh
++ printenv
+JENKINS_HOME=/var/jenkins_home
+GIT_PREVIOUS_SUCCESSFUL_COMMIT=5fa56922c1f75a01599ce72411af01dfe91661a6
+DOCKERHUB_CREDENTIALS_PSW=****
+DOCKERHUB_CREDENTIALS_USR=****
+JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental
+CI=true
+RUN_CHANGES_DISPLAY_URL=http://51.250.107.10:8080/job/dip-pipe/job/stage/25/display/redirect?page=changes
+HOSTNAME=94275d3d4735
+SHLVL=0
+NODE_LABELS=built-in
+HUDSON_URL=http://51.250.107.10:8080/
+GIT_COMMIT=5e9cc515a2c8fd5f76882407612ff6b785d88d4a
+HOME=/root
+BUILD_URL=http://51.250.107.10:8080/job/dip-pipe/job/stage/25/
+DOCKERHUB_CREDENTIALS=****
+HUDSON_COOKIE=79074f79-9967-4c61-ab30-b1a06acbd088
+JENKINS_SERVER_COOKIE=durable-6d7107bbee0d4f0bf2ec449aabf702e731ff6f2954973e696101450b6cc8df7a
+JENKINS_UC=https://updates.jenkins.io
+WORKSPACE=/var/jenkins_home/workspace/dip-pipe_stage
+REF=/usr/share/jenkins/ref
+NODE_NAME=built-in
+RUN_ARTIFACTS_DISPLAY_URL=http://51.250.107.10:8080/job/dip-pipe/job/stage/25/display/redirect?page=artifacts
+STAGE_NAME=Prerequisites
+GIT_BRANCH=stage
+EXECUTOR_NUMBER=1
+RUN_TESTS_DISPLAY_URL=http://51.250.107.10:8080/job/dip-pipe/job/stage/25/display/redirect?page=tests
+BUILD_DISPLAY_NAME=#25
+JENKINS_VERSION=2.401.2
+JENKINS_INCREMENTALS_REPO_MIRROR=https://repo.jenkins-ci.org/incrementals
+HUDSON_HOME=/var/jenkins_home
+JOB_BASE_NAME=stage
+PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+BUILD_ID=25
+BUILD_TAG=jenkins-dip-pipe-stage-25
+JENKINS_URL=http://51.250.107.10:8080/
+LANG=C.UTF-8
+JOB_URL=http://51.250.107.10:8080/job/dip-pipe/job/stage/
+GIT_URL=https://github.com/****/dip_nginx.git
+BUILD_NUMBER=25
+JENKINS_NODE_COOKIE=f78197a3-0266-4959-9059-852c19a97879
+RUN_DISPLAY_URL=http://51.250.107.10:8080/job/dip-pipe/job/stage/25/display/redirect
+JENKINS_SLAVE_AGENT_PORT=50000
+HUDSON_SERVER_COOKIE=f375efe74e2c6783
+JOB_DISPLAY_URL=http://51.250.107.10:8080/job/dip-pipe/job/stage/display/redirect
+JOB_NAME=dip-pipe/stage
+COPY_REFERENCE_FILE_LOG=/var/jenkins_home/copy_reference_file.log
+PWD=/var/jenkins_home/workspace/dip-pipe_stage
+JAVA_HOME=/opt/java/openjdk
+GIT_PREVIOUS_COMMIT=5fa56922c1f75a01599ce72411af01dfe91661a6
+WORKSPACE_TMP=/var/jenkins_home/workspace/dip-pipe_stage@tmp
+BRANCH_NAME=stage
+[Pipeline] sh
++ docker version
+Client: Docker Engine - Community
+ Version:           24.0.3
+ API version:       1.43
+ Go version:        go1.20.5
+ Git commit:        3713ee1
+ Built:             Wed Jul  5 20:44:59 2023
+ OS/Arch:           linux/amd64
+ Context:           default
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          24.0.3
+  API version:      1.43 (minimum version 1.12)
+  Go version:       go1.20.5
+  Git commit:       1d9c861
+  Built:            Wed Jul  5 20:44:47 2023
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          1.6.21
+  GitCommit:        3dce8eb055cbb6872793272b4f20ed16117344f8
+ runc:
+  Version:          1.1.7
+  GitCommit:        v1.1.7-0-g860f061
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+[Pipeline] sh
++ docker-compose version
+docker-compose version 1.26.2, build eefe0d31
+docker-py version: 4.2.2
+CPython version: 3.7.7
+OpenSSL version: OpenSSL 1.1.0l  10 Sep 2019
+[Pipeline] sh
++ kubectl cluster-info
+[0;32mKubernetes control plane[0m is running at [0;33mhttps://51.250.103.200:6443[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[Pipeline] sh
++ helm version
+WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /root/.kube/config
+WARNING: Kubernetes configuration file is world-readable. This is insecure. Location: /root/.kube/config
+version.BuildInfo{Version:"v3.12.1", GitCommit:"f32a527a060157990e2aa86bf45010dfb3cc8b8d", GitTreeState:"clean", GoVersion:"go1.20.4"}
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Prepare image)
+[Pipeline] sh
++ ./gen_index.sh 0.0.25
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Building image app-nginx)
+[Pipeline] sh
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [DOCKERHUB_CREDENTIALS_USR]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ docker build . -t ****/app-nginx:0.0.25
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from dockerfile
+#1 transferring dockerfile: 88B done
+#1 DONE 0.0s
+
+#2 [internal] load .dockerignore
+#2 transferring context: 2B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/nginx:1.19.1
+#3 DONE 0.5s
+
+#4 [internal] load build context
+#4 transferring context: 538B done
+#4 DONE 0.0s
+
+#5 [1/2] FROM docker.io/library/nginx:1.19.1@sha256:36b74457bccb56fbf8b05f79c85569501b721d4db813b684391d63e02287c0b2
+#5 CACHED
+
+#6 [2/2] COPY nginx /usr/share/nginx/html/
+#6 DONE 0.1s
+
+#7 exporting to image
+#7 exporting layers 0.1s done
+#7 writing image sha256:a7310f6c318722f0ab3610334a41feb0d23ff78687587d3d2cd19b0a7d875f02 0.0s done
+#7 naming to docker.io/****/app-nginx:0.0.25 0.0s done
+#7 DONE 0.2s
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Push building image app-nginx)
+[Pipeline] sh
++ docker login -u **** --password-stdin
++ echo ****
+WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[Pipeline] sh
+Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
+		 Affected argument(s) used the following variable(s): [DOCKERHUB_CREDENTIALS_USR]
+		 See https://jenkins.io/redirect/groovy-string-interpolation for details.
++ docker push ****/app-nginx:0.0.25
+The push refers to repository [docker.io/****/app-nginx]
+e702352b095c: Preparing
+ac078d8f08c6: Preparing
+6d196faff4ee: Preparing
+ed39597d1556: Preparing
+ff73b8119c50: Preparing
+d0f104dc0a1f: Preparing
+d0f104dc0a1f: Waiting
+ed39597d1556: Layer already exists
+ff73b8119c50: Layer already exists
+6d196faff4ee: Layer already exists
+ac078d8f08c6: Layer already exists
+d0f104dc0a1f: Layer already exists
+e702352b095c: Pushed
+0.0.25: digest: sha256:50d50ac407cdaa5fcdbd88a1917c242862e4afef30b2fb6bd330ae3c2035c24b size: 1572
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Helm deploy app to k8s)
+[Pipeline] sh
++ helm template ./helm/charts/app-nginx
+WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /root/.kube/config
+WARNING: Kubernetes configuration file is world-readable. This is insecure. Location: /root/.kube/config
+---
+# Source: nginx/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-nginx
+  namespace: stage
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: app-nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 31005
+---
+# Source: nginx/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name
+  namespace: stage
+  labels:
+    app.kubernetes.io/name: app-nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: app-nginx
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: app-nginx
+    spec:
+      containers:
+      - name: "app-nginx"
+        image: "****/app-nginx:latest"
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: 80Mi
+            cpu: 100m
+          limits:
+            memory: 128Mi
+            cpu: 128m
+        ports:
+        - containerPort: 80
+          name: web
+          protocol: TCP
+[Pipeline] sh
++ kubectl create ns stage --dry-run=client
+namespace/stage created (dry run)
+[Pipeline] sh
++ helm upgrade --install app-nginx ./helm/charts/app-nginx --set=app_nginx_deployment.image.tag=0.0.25
+WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /root/.kube/config
+WARNING: Kubernetes configuration file is world-readable. This is insecure. Location: /root/.kube/config
+Release "app-nginx" has been upgraded. Happy Helming!
+NAME: app-nginx
+LAST DEPLOYED: Fri Jul  7 14:04:39 2023
+NAMESPACE: default
+STATUS: deployed
+REVISION: 11
+TEST SUITE: None
+[Pipeline] sh
++ kubectl get all -n stage
+NAME                             READY   STATUS              RESTARTS   AGE
+pod/app-nginx-5f5dd7d665-hq8j5   1/1     Running             0          72s
+pod/app-nginx-5f5dd7d665-j9qvr   1/1     Running             0          62s
+pod/app-nginx-5f5dd7d665-t2r5m   1/1     Running             0          66s
+pod/app-nginx-76656cc4b6-hplrl   0/1     ContainerCreating   0          0s
+
+NAME                TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+service/app-nginx   NodePort   10.233.49.90   <none>        80:31005/TCP   67m
+
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/app-nginx   3/3     1            3           67m
+
+NAME                                   DESIRED   CURRENT   READY   AGE
+replicaset.apps/app-nginx-5b74fc7765   0         0         0       56m
+replicaset.apps/app-nginx-5cc7885cd7   0         0         0       66m
+replicaset.apps/app-nginx-5f5dd7d665   3         3         3       72s
+replicaset.apps/app-nginx-69879c557    0         0         0       56m
+replicaset.apps/app-nginx-6d6c5cd484   0         0         0       3m30s
+replicaset.apps/app-nginx-6d8468878c   0         0         0       64m
+replicaset.apps/app-nginx-746bc584bb   0         0         0       53m
+replicaset.apps/app-nginx-76656cc4b6   1         1         0       0s
+replicaset.apps/app-nginx-787bcb7c55   0         0         0       51m
+replicaset.apps/app-nginx-856b58b      0         0         0       57m
+replicaset.apps/app-nginx-f48b49f9b    0         0         0       67m
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+
+Could not update commit status, please check if your scan credentials belong to a member of the organization or a collaborator of the repository and repo:status scope is selected
+
+
+GitHub has been notified of this commit’s build result
+
+Finished: SUCCESS
