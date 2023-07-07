@@ -30,8 +30,6 @@ variable "disk_image_id" {
 
 # All VPS config
 
-# Основные
-
 # Раскидаем подсети по зонам
 variable "zone-manage" {
   default = "ru-central1-a"
