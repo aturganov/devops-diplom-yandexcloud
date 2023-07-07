@@ -36,7 +36,7 @@ resource "local_file" "k8s-kubespray" {
 # --ssh-common-args='-o StrictHostKeyChecking=no'
 resource "null_resource" "pre_kubespray" {
   provisioner "local-exec" {
-    command = "ANSIBLE_FORCE_COLOR=1  ansible-playbook -i ./.ansible/inventory.ini kubespray.yaml -e ansible_become_password=Temp001 --extra-vars external_ip=${yandex_compute_instance.vm_stage_master.network_interface.0.nat_ip_address}"
+    command = "ANSIBLE_FORCE_COLOR=1 ansible-playbook -i ./.ansible/inventory.ini kubespray.yaml -e ansible_become_password=Temp001 --extra-vars external_ip=${yandex_compute_instance.vm_stage_master.network_interface.0.nat_ip_address}"
   }
 
   depends_on = [

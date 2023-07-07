@@ -9,3 +9,6 @@ kubectl create ns stage --dry-run=client
 
 helm upgrade --install app-nginx ./helm_app/charts/app-nginx
 # helm uninstall app-nginx
+
+
+# helm upgrade --install app-nginx ./helm/charts/app-nginx

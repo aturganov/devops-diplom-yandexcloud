@@ -18,7 +18,7 @@ docker push aturganov/jenkins-docker-kubectl-helm
 docker run -d --name jenkins -p 8080:8080 -p 50000:50000 \
 -u root --restart on-failure \
 -v /var/run/docker.sock:/var/run/docker.sock \
--v $PWD/jenkins-data:/var/jenkins_home aturganov/jenkins-docker-kubectl-helm
+-v $PWD/jenkins-data:/var/jenkins_home aturganov/jenkins-docker-kubectl-helm:0.0.3
 
 docker exec -it -u root jenkins bash
 
