@@ -247,8 +247,6 @@ kube-system   nodelocaldns-zvl62                        1/1     Running   0     
 >2. Регистр с собранным docker image. В качестве регистра может быть DockerHub или [Yandex Container Registry](https://cloud.yandex.ru/services/container-registry), созданный также с помощью terraform.
 
 ## Подход
-Для теста работы DockerHub
-
 Создадим ветку для тестирования DockerHub
 ```
 locadm@netology01:~/git/dip_nginx$ git checkout -b test-dockerhub
@@ -286,7 +284,14 @@ https://hub.docker.com/repository/docker/aturganov/dip-nginx/general
 
 Откроем на локале, проверим работоспособность
 ![dip_nginx_local.PNG](src/dip_nginx_local.PNG)
-```
+
+Финальные файлы и репозитории:
+* GitHub
+https://github.com/aturganov/dip_nginx/tree/test-dockerhub
+* Dockerfile
+https://github.com/aturganov/dip_nginx/blob/test-dockerhub/dockerfile
+* DockerHub
+https://hub.docker.com/repository/docker/aturganov/dip-nginx/general
 
 ---
 ### Подготовка cистемы мониторинга и деплой приложения
@@ -313,86 +318,53 @@ https://hub.docker.com/repository/docker/aturganov/dip-nginx/general
 >3. Дашборды в grafana отображающие состояние Kubernetes кластера.
 >4. Http доступ к тестовому приложению.
 
+## Развертывание системы мониторинга
+Пакет prometeus развернем используя Helm в кластер (можно на локале, можно на ноде)
+
+Версия Helm
 ```
 root@node1:~/kube-prometheus# helm version
 version.BuildInfo{Version:"v3.12.1", GitCommit:"f32a527a060157990e2aa86bf45010dfb3cc8b8d", GitTreeState:"clean", GoVersion:"go1.20.4"}
-
+```
+Создаем новый namespace
+```
 root@node1:~/kube-prometheus# kubectl create ns monitoring
 namespace/monitoring created
-
-root@node1:~#  git clone https://github.com/coreos/prometheus-operator.git
-cd prometheus-operator
-
+```
+Подключаем репы
+```
 helm repo add stable https://charts.helm.sh/stable
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm search repo prometheus-community
+root@node1:~/kube-prometheus# helm search repo prometheus-community
+NAME                                                    CHART VERSION   APP VERSION     DESCRIPTION                                       
+prometheus-community/alertmanager                       0.33.1          v0.25.0         The Alertmanager handles alerts sent by client ...
+prometheus-community/alertmanager-snmp-notifier         0.1.1           v1.4.0          The SNMP Notifier handles alerts coming from Pr...
+prometheus-community/jiralert                           1.4.1           v1.3.0          A Helm chart for Kubernetes to install jiralert 
+...
+```
 
-Установка
-helm install stable prometheus-community/kube-prometheus-stack
-
-root@node1:~/prometheus-operator# helm install stable prometheus-community/kube-prometheus-stack
-NAME: stable
-LAST DEPLOYED: Sat Jul  1 14:11:09 2023
-NAMESPACE: default
+Установка Prometheus
+```
+root@node1:~# helm upgrade --install prometheus prometheus-community/kube-prometheus-stack -n monitoring
+Release "prometheus" has been upgraded. Happy Helming!
+NAME: prometheus
+LAST DEPLOYED: Mon Jul  3 20:45:00 2023
+NAMESPACE: monitoring
 STATUS: deployed
-REVISION: 1
+REVISION: 2
 NOTES:
 kube-prometheus-stack has been installed. Check its status by running:
-  kubectl --namespace default get pods -l "release=stable"
+  kubectl --namespace monitoring get pods -l "release=prometheus"
 
-https://stackoverflow.com/questions/44110876/kubernetes-service-external-ip-pending
-https://kubernetes.io/docs/concepts/services-networking/ingress/
+Visit https://github.com/prometheus-operator/kube-prometheus for instructions on how to create & configure Alertmanager and Prometheus instances using the Operator.
+```
+Для доступа извне создаем манифест с дополнительным сервисом
+```
+kubectl apply -f ./manifests/grafana-service.yml
+```
+[grafana-service.yml](monitoring/manifests/grafana-service.yml)
 
 ```
-Kubernetes NodePort vs LoadBalancer vs Ingress? Когда и что использовать?
-https://habr.com/ru/companies/southbridge/articles/358824/
-
-
-```
-Документация:
-https://github.com/prometheus-operator/kube-prometheus
-
-kubectl apply --server-side -f manifests/setup
-root@stage-master:~/kube-prometheus/manifests# kubectl get ns
-NAME              STATUS   AGE
-default           Active   5h26m
-kube-node-lease   Active   5h26m
-kube-public       Active   5h26m
-kube-system       Active   5h26m
-monitoring        Active   69s
-```
-
-
-kubectl wait --for=condition=Established --all CustomResourceDefinition --namespace=monitoring
-root@stage-master:~/kube-prometheus# kubectl wait --for=condition=Established --all CustomResourceDefinition --namespace=monitoring
-customresourcedefinition.apiextensions.k8s.io/alertmanagerconfigs.monitoring.coreos.com condition met
-customresourcedefinition.apiextensions.k8s.io/alertmanagers.monitoring.coreos.com condition met
-customresourcedefinition.apiextensions.k8s.io/bgpconfigurations.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/bgppeers.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/blockaffinities.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/caliconodestatuses.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/clusterinformations.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/felixconfigurations.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/globalnetworkpolicies.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/globalnetworksets.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/hostendpoints.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/ipamblocks.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/ipamconfigs.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/ipamhandles.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/ippools.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/ipreservations.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/kubecontrollersconfigurations.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/networkpolicies.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/networksets.crd.projectcalico.org condition met
-customresourcedefinition.apiextensions.k8s.io/podmonitors.monitoring.coreos.com condition met
-customresourcedefinition.apiextensions.k8s.io/probes.monitoring.coreos.com condition met
-customresourcedefinition.apiextensions.k8s.io/prometheuses.monitoring.coreos.com condition met
-customresourcedefinition.apiextensions.k8s.io/prometheusrules.monitoring.coreos.com condition met
-customresourcedefinition.apiextensions.k8s.io/servicemonitors.monitoring.coreos.com condition met
-customresourcedefinition.apiextensions.k8s.io/thanosrulers.monitoring.coreos.com condition met
-
-root@stage-master:~/kube-prometheus# kubectl apply -f manifests/
-
 root@stage-master:~/kube-prometheus# kubectl get pods --namespace=monitoring
 NAME                                  READY   STATUS    RESTARTS        AGE
 alertmanager-main-0                   1/2     Running   3 (3s ago)      28m
@@ -409,67 +381,58 @@ prometheus-adapter-6455646bdc-n4vqs   1/1     Running   1 (2m46s ago)   28m
 prometheus-k8s-0                      2/2     Running   0               57s
 prometheus-k8s-1                      2/2     Running   0               28m
 prometheus-operator-f59c8b954-kfz8j   2/2     Running   2 (2m44s ago)   28m
-
-Тупо удаляем: 
-kubectl delete -n monitoring networkpolicy grafana
-kubectl logs -n monitoring grafana-5fc7f9f55d-w7c76
-
 ```
+![monitoring.PNG](src/monitoring.PNG)
 
-
+Запрашиваем пароль доступа
 ```
-
-kubectl create namespace monitoring
-
-root@node1:~# helm upgrade --install prometheus prometheus-community/kube-prometheus-stack -n monitoring
-Release "prometheus" has been upgraded. Happy Helming!
-NAME: prometheus
-LAST DEPLOYED: Mon Jul  3 20:45:00 2023
-NAMESPACE: monitoring
-STATUS: deployed
-REVISION: 2
-NOTES:
-kube-prometheus-stack has been installed. Check its status by running:
-  kubectl --namespace monitoring get pods -l "release=prometheus"
-
-Visit https://github.com/prometheus-operator/kube-prometheus for instructions on how to create & configure Alertmanager and Prometheus instances using the Operator.
-kubectl apply -f ./manifests/grafana-service.yml
-kubectl get secret --namespace monitoring
-
 locadm@netology01:~/git/devops-diplom-yandexcloud/terraform$ kubectl get secret --namespace monitoring prometheus-grafana -o jsonpath="
 {.data.admin-password}" | base64 --decode ; echo
 prom-operator
 ```
-APPLICATION
+Хост Grafana
+http://51.250.103.200:32000/
+
+Логин/Пароль
+
+admin prom-operator
+
+![grafana.PNG](src/grafana.PNG)
+
+## Развертывание приложения на кластере
+Подготовим темплейты helm для чарты dip-nginx
+[deployment.yaml](helm_app/charts/deployment.yaml)
+[service.yaml](helm_app/charts/service.yaml)
+А также файл values.yaml - переменные для темплейта
+[values.yaml](helm_app/charts/values.yaml)
+
+Проверяем темплаты
 ```
-locadm@netology01:~/git/devops-diplom-yandexcloud$ helm upgrade --install app-nginx ./helm_app/charts/app-nginx
-Release "app-nginx" has been upgraded. Happy Helming!
-NAME: app-nginx
-LAST DEPLOYED: Wed Jul  5 15:55:10 2023
-NAMESPACE: default
+locadm@netology01:~/git/devops-diplom-yandexcloud$ helm template helm_app/charts/dip-nginx
+---
+# Source: nginx/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+...
+```
+Деплой в кубер в ns test-dockerhub
+```
+locadm@netology01:~/git/devops-diplom-yandexcloud$ helm upgrade --install dip-nginx ./helm_app/charts/dip-nginx -n test-dockerhub
+Release "dip-nginx" does not exist. Installing it now.
+NAME: dip-nginx
+LAST DEPLOYED: Sat Jul  8 04:53:12 2023
+NAMESPACE: test-dockerhub
 STATUS: deployed
-REVISION: 3
+REVISION: 1
 TEST SUITE: None
+```
+Смотрим созданные все объекты:
+![dip-nginx-all-kube.PNG](src/dip-nginx-all-kube.PNG)
 
-locadm@netology01:~/git/devops-diplom-yandexcloud$ kubectl get all -n stage
-NAME                                       READY   STATUS    RESTARTS   AGE
-pod/app-nginx-app-nginx-59d7dcdfb9-2pmtn   1/1     Running   0          77s
-pod/app-nginx-app-nginx-59d7dcdfb9-srtdg   1/1     Running   0          77s
-pod/app-nginx-app-nginx-59d7dcdfb9-tp2p7   1/1     Running   0          77s
+http://51.250.103.200:31000/
 
-NAME                TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
-service/app-nginx   NodePort   10.233.0.138   <none>        80:31000/TCP   77s
-
-NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/app-nginx-app-nginx   3/3     3            3           77s
-
-NAME                                             DESIRED   CURRENT   READY   AGE
-replicaset.apps/app-nginx-app-nginx-59d7dcdfb9   3         3         3       77s
-
-kubectl exec app-nginx-app-nginx-59d7dcdfb9-2pmtn curl localhost
-
-https://hub.docker.com/repository/docker/aturganov/nginx-stage2/general
-
+![dip-nginx-kube.PNG](src/dip-nginx-kube.PNG)
 
 
 

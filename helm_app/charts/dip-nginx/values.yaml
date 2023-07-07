@@ -1,8 +1,8 @@
 replicaCount: 1
 
-app_nginx_deployment:
+dip_nginx_deployment:
   image:
-    repository: aturganov/nginx-stage2:0.0.2
+    repository: aturganov/dip-nginx:0.0.1
     tag: latest
   resources:
     requests: 
@@ -11,7 +11,7 @@ app_nginx_deployment:
     limits:
       memory: "128Mi"
       cpu: "128m"
-  replicaCount: 3
+  replicaCount: 2
 
 app_nginx_service:
   nodeport: 31000

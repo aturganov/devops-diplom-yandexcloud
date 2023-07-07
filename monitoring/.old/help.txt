@@ -1,0 +1,2 @@
+https://stackoverflow.com/questions/44110876/kubernetes-service-external-ip-pending
+https://kubernetes.io/docs/concepts/services-networking/ingress/

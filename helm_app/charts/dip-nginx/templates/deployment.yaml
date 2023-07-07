@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dip-nginx-{{ .Release.Name }}
+  namespace: test-dockerhub
+  labels:
+    app.kubernetes.io/name: dip-nginx
+spec:
+  replicas: {{ .Values.dip_nginx_deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dip-nginx
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: dip-nginx
+    spec:
+      containers:
+      - name: dip-nginx
+        image: {{ .Values.dip_nginx_deployment.image.repository }}
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: {{ .Values.dip_nginx_deployment.resources.requests.memory }}
+            cpu: {{ .Values.dip_nginx_deployment.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.dip_nginx_deployment.resources.limits.memory }}
+            cpu: {{ .Values.dip_nginx_deployment.resources.limits.cpu }}
+        ports:
+        - containerPort: 80
+          name: web
+          protocol: TCP
