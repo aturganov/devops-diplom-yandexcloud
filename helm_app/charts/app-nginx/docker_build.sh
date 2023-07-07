@@ -5,12 +5,10 @@ ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
 # Создание образа с тагом версии
 cd /home/locadm/git/dip_nginx
-docker build . -t aturganov/nginx-stage2:0.0.2
+docker build . -t aturganov/dip-nginx:0.0.1
 
 # Подьем в репу
-docker push aturganov/nginx-stage2:0.0.2
+docker push aturganov/dip-nginx:0.0.1
 
 # Локальный тест
-docker run -p 31000:80 aturganov/nginx-stage2:0.0.2
-
-docker run -p 31000:80 aturganov/nginx-stage
+docker run -p 31000:80 aturganov/dip-nginx:0.0.1

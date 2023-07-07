@@ -254,55 +254,39 @@ kube-system   nodelocaldns-zvl62                        1/1     Running   0     
 locadm@netology01:~/git/dip_nginx$ git checkout -b test-dockerhub
 Switched to a new branch 'test-dockerhub'
 ```
+Внесем базовый код (был уже на main)
+https://github.com/aturganov/dip_nginx/tree/test-dockerhub
+
+Сделаем сборку образа на локале 
 ```
-docker build . -t aturganov/nginx-stage
-docker run -d --name nginx aturganov/nginx-stage
-docker push aturganov/nginx-stage
-https://hub.docker.com/repository/docker/aturganov/nginx-stage/general
+locadm@netology01:~/git/dip_nginx$ docker build . -t aturganov/dip-nginx:0.0.1
+Sending build context to Docker daemon    791kB
+Step 1/2 : FROM nginx:1.19.1
+ ---> 08393e824c32
+Step 2/2 : COPY nginx /usr/share/nginx/html/
+ ---> Using cache
+ ---> 8d5adea23195
+Successfully built 8d5adea23195
+Successfully tagged aturganov/dip-nginx:0.0.1
+```
+Отправляем в DockerHub
+```
+locadm@netology01:~/git/dip_nginx$ docker push aturganov/dip-nginx:0.0.1
+The push refers to repository [docker.io/aturganov/dip-nginx]
+812f01fb62b5: Pushed 
+ac078d8f08c6: Mounted from aturganov/nginx-stage2 
+6d196faff4ee: Mounted from aturganov/nginx-stage2 
+ed39597d1556: Mounted from aturganov/nginx-stage2 
+ff73b8119c50: Mounted from aturganov/nginx-stage2 
+d0f104dc0a1f: Mounted from aturganov/nginx-stage2 
+0.0.1: digest: sha256:66f912c45507c93d39628494ae9a13086bcf7153e18e2e1fb0323448f6e8b548 size: 1569
 ```
 Репозиторий:
-https://github.com/aturganov/dip_nginx
+https://hub.docker.com/repository/docker/aturganov/dip-nginx/general
 
-Проблема с подключение к хосту git, добавляем хост на локальную машину
-ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
-
-Деплой:
-
-locadm@netology01:~/git/devops-diplom-yandexcloud/terraform$ kubectl create deploy nginx --image=aturganov/nginx-stage:latest --replicas=3
-deployment.apps/nginx created
-
-locadm@netology01:~/git/devops-diplom-yandexcloud/terraform$ kubectl get pods -o wide
-NAME                    READY   STATUS    RESTARTS   AGE   IP            NODE    NOMINATED NODE   READINESS GATES
-nginx-6fdccc7f9-7x2q9   1/1     Running   0          63s   10.233.96.2   node2   <none>           <none>
-nginx-6fdccc7f9-ln4xl   1/1     Running   0          63s   10.233.92.2   node3   <none>           <none>
-nginx-6fdccc7f9-rhpbm   1/1     Running   0          63s   10.233.96.1   node2   <none>           <none>
-
+Откроем на локале, проверим работоспособность
+![dip_nginx_local.PNG](src/dip_nginx_local.PNG)
 ```
-```
-Список текущих подов
-locadm@netology01:~/git/devops-diplom-yandexcloud/terraform$  kubectl get pods --namespace=kube-system -o wide
-NAME                                       READY   STATUS    RESTARTS      AGE   IP              NODE    NOMINATED NODE   READINESS GATES
-calico-kube-controllers-6dd874f784-gd87g   1/1     Running   0             82m   192.168.10.13   node2   <none>           <none>
-calico-node-8d8x5                          1/1     Running   0             83m   192.168.10.17   node3   <none>           <none>
-calico-node-cms8k                          1/1     Running   0             83m   192.168.10.21   node1   <none>           <none>
-calico-node-qc2s7                          1/1     Running   0             83m   192.168.10.13   node2   <none>           <none>
-coredns-76b4fb4578-26gdl                   1/1     Running   0             81m   10.233.92.1     node3   <none>           <none>
-coredns-76b4fb4578-sxdhh                   1/1     Running   0             81m   10.233.90.1     node1   <none>           <none>
-dns-autoscaler-7979fb6659-n4f9g            1/1     Running   0             81m   10.233.90.2     node1   <none>           <none>
-kube-apiserver-node1                       1/1     Running   1             84m   192.168.10.21   node1   <none>           <none>
-kube-controller-manager-node1              1/1     Running   2 (80m ago)   84m   192.168.10.21   node1   <none>           <none>
-kube-proxy-86czm                           1/1     Running   0             83m   192.168.10.21   node1   <none>           <none>
-kube-proxy-w2f9t                           1/1     Running   0             83m   192.168.10.13   node2   <none>           <none>
-kube-proxy-wf22s                           1/1     Running   0             83m   192.168.10.17   node3   <none>           <none>
-kube-scheduler-node1                       1/1     Running   2 (80m ago)   84m   192.168.10.21   node1   <none>           <none>
-nginx-proxy-node2                          1/1     Running   0             83m   192.168.10.13   node2   <none>           <none>
-nginx-proxy-node3                          1/1     Running   0             83m   192.168.10.17   node3   <none>           <none>
-nodelocaldns-9g9j2                         1/1     Running   0             81m   192.168.10.21   node1   <none>           <none>
-nodelocaldns-hk25r                         1/1     Running   0             81m   192.168.10.13   node2   <none>           <none>
-nodelocaldns-rjt27                         1/1     Running   0             81m   192.168.10.17   node3   <none>           <none>
-locadm@
-```
-
 
 ---
 ### Подготовка cистемы мониторинга и деплой приложения
