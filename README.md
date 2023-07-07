@@ -246,6 +246,14 @@ kube-system   nodelocaldns-zvl62                        1/1     Running   0     
 >1. Git репозиторий с тестовым приложением и Dockerfile.
 >2. Регистр с собранным docker image. В качестве регистра может быть DockerHub или [Yandex Container Registry](https://cloud.yandex.ru/services/container-registry), созданный также с помощью terraform.
 
+## Подход
+Для теста работы DockerHub
+
+Создадим ветку для тестирования DockerHub
+```
+locadm@netology01:~/git/dip_nginx$ git checkout -b test-dockerhub
+Switched to a new branch 'test-dockerhub'
+```
 ```
 docker build . -t aturganov/nginx-stage
 docker run -d --name nginx aturganov/nginx-stage

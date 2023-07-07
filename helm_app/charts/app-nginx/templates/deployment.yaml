@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app-nginx-{{ .Release.Name }}
-  namespace: stage
+  namespace: test-dockerhub
   labels:
     app.kubernetes.io/name: app-nginx
 spec:
