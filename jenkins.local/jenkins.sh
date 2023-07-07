@@ -14,3 +14,5 @@ docker run -d --name jenkins-docker -p 8080:8080 -p 50000:50000 \
 
 # install helm
 # https://blog.devops.dev/deploying-helm-charts-with-jenkins-and-groovy-a-comprehensive-guide-c2aa0f2bd424#:~:text=Install%20the%20Helm%20plugin%20for,and%20searching%20for%20%E2%80%9CHelm%E2%80%9D.
+
+docker exec -it -u root ed361b0308d9 bash
