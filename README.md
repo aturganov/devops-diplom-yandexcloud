@@ -56,7 +56,7 @@
 На этапе построения мониторинга, CI/CD при необходимости добавлю 1/2 ноды под отдельностоящие, либо кластерные ноды.
 
 ### - Подготовка локальной машины
-Работы будут проводится с локальной машины, обновим:
+Работы будут проводится с локальной машины, обновим инструментарий:
 ```
 locadm@netology01:~/git/devops-diplom-yandexcloud$ yc version
 Yandex Cloud CLI 0.108.1 linux/amd64
@@ -185,7 +185,7 @@ locadm@netology01:~/git/devops-diplom-yandexcloud$ yc compute instance list
 >2. В файле `~/.kube/config` находятся данные для доступа к кластеру.
 >3. Команда `kubectl get pods --all-namespaces` отрабатывает без ошибок.
 
-## Подход
+### - Подход
 Ставим кубер на минимальную инфру путем kubespray.
 Извлекаем конфиги для внешнего подключения.
 
@@ -399,6 +399,13 @@ admin prom-operator
 
 ![grafana.PNG](src/grafana.PNG)
 
+Warnings:
+При установке пакета prometheus не хватило ресурсов нодов, увеличил диски и память.
+Поскольку на машинах уже был приличных навес плейбуков и других скриптов терраформом было рисковано переопределять ресурсы,
+отработали бы local-exec и т.д.
+Добавил ресурсов нодам через консоль yc, последовательно отключая машины. Текущий рассклад.
+![wms.PNG](src/wms.PNG)
+
 ## Развертывание приложения на кластере
 Подготовим темплейты helm для чарты dip-nginx
 [deployment.yaml](helm_app/charts/deployment.yaml)
@@ -434,21 +441,123 @@ http://51.250.103.200:31000/
 
 ![dip-nginx-kube.PNG](src/dip-nginx-kube.PNG)
 
+Git repo
+https://github.com/aturganov/devops-diplom-yandexcloud/tree/main/monitoring
+
+---
+### Установка и настройка CI/CD
+<details><summary> Задание </summary>
+
+Осталось настроить ci/cd систему для автоматической сборки docker image и деплоя приложения при изменении кода.
+
+Цель:
+
+1. Автоматическая сборка docker образа при коммите в репозиторий с тестовым приложением.
+2. Автоматический деплой нового docker образа.
+
+Можно использовать [teamcity](https://www.jetbrains.com/ru-ru/teamcity/), [jenkins](https://www.jenkins.io/), [GitLab CI](https://about.gitlab.com/stages-devops-lifecycle/continuous-integration/) или GitHub Actions.
+</details>
+>Ожидаемый результат:
+>
+>1. Интерфейс ci/cd сервиса доступен по http.
+>2. При любом коммите в репозиторие с тестовым приложением происходит сборка и отправка в регистр Docker образа.
+>3. При создании тега (например, v1.0.0) происходит сборка и отправка с соответствующим label в регистр, а также деплой соответствующего >Docker образа в кластер Kubernetes.
+
+### - Исследовательская работа
+Выбрал Jenkins поскольку это та система, которая потенциально может использоваться на работе. Для начала я попробывал поставить классический деплой в кубер jenkins c Slave агентами на кластер.
+https://www.jenkins.io/doc/book/installing/kubernetes/
+Выяснилось, что не смотря на наличие плагинов docker image slave не имеют включенной инсталляции докер и других приложение. А также прав на работу доступ внутри контейнера на докер сокет и т.д. И это не смотря на то, что разрабочик добавил dockertools и т.д.
+> Саму инсталляцию опишу ниже (как доп. инфо.)
+
+Поискав в источниках и GiHub нашел следущие подходы:
+* Деплоймент на кубере с собранным контейнером на базе базового модуля jenkins. Такая сборка будет работать без Slave агентов.
+В случае Slave агентов, нужно будет пересобрать Slave image c дополнительным приложениями (docker, kubectl).
+* Альтернативой kube-slave агента, является Docker - агент, но его родной image тоже надо пересобирать с включением приложений.
+* Более ранние инсталляции базировались на докер.
+
+Выбрал последнией вариант (без slave машин). Было интересно разорбрать в архитектуре Jenkins и базовой работе со сборкой образов.
+>P.S. Деплоймент в кубер будет лишь прозводная от выбранного варианта. Но в случае кубера лучше инсталлировать с кубер агентами при >наличии собранных images.
+
+### - Реализация
+Собираем image с docker, helm, kubectl.
+Общая папка в файлами:
+https://github.com/aturganov/devops-diplom-yandexcloud/tree/main/jenkins.local
 
 
+Для инсталляции Jenkins разворачиваем еще один VM в собственной сетью/подсетью
+Terraform:
+[keys.tf](jenkins.local/keys.tf)
+[network.tf](jenkins.local/network.tf)
+[compute.tf](jenkins.local/compute.tf)
+[ansible.tf](jenkins.local/ansible.tf)
+...
 
 
+Сборка image на базе jenkins/jenkins
+[dockerfile](jenkins.local/dockerfile.local)
 
+DockerHub 
+https://hub.docker.com/repository/docker/aturganov/jenkins-docker-kubectl-helm/general
 
-
-
-
-
-
-
+Поднимаем контейнер на новой ноде, прокидываем volumes рабочей директории:
 ```
-locadm@netology01:~/git/devops-diplom-yandexcloud$ kubectl apply -f jenkins/jenkins-volume.yaml
-persistentvolume/jenkins-pv created
-storageclass.storage.k8s.io/jenkins-pv created
-
+docker run -d --name jenkins -p 8080:8080 -p 50000:50000 \
+-u root --restart on-failure \
+-v /var/run/docker.sock:/var/run/docker.sock \
+-v $PWD/jenkins-data:/var/jenkins_home aturganov/jenkins-docker-kubectl-helm:0.0.3
 ```
+
+Хост jenkins
+http://51.250.107.10:8080/login?from=%2F
+
+Пароль/логин
+admin Temp001
+
+Проводим преднастройку jenkins:
+* Креды GitHub (Api personal token), Github login/password, DockerHub login/password 
+![jenkins_cred.PNG](src/jenkins_cred.PNG)
+* Подключаемся к API Github для интеграции pipline
+![jenkins_cred.PNG](src/jenkins_cred.PNG)
+* Задаем ветку stage в проекте
+https://github.com/aturganov/dip_nginx/tree/stage
+* Создаем multibranche pipeline, лиметирируем отслеживаемые ветки Stage
+![jenkins_git.PNG](src/jenkins_git.PNG)
+
+Переходим к разработке и отлаживанию jenkinsfile
+Сценарий pipe:
+* Prerequisites - проверка наличия/работы входящих приложений и удаленного подключения к куберу.
+* Prepare image - прошвка приложение новым тагом (на центральной таблице автоматически указывается версия сборки)
+* Building image - сборка image с указанием TAG по номеру пайпа jenkins
+* Push building image - отправка в Dockerhub
+* Helm deploy app to k8s - деплой образа с Dockerhub в k8s 
+https://github.com/aturganov/dip_nginx/blob/stage/Jenkinsfile
+
+http://51.250.103.200:31005/
+![app_pipe.PNG](src/app_pipe.PNG)
+
+DockerHub
+https://hub.docker.com/repository/docker/aturganov/app-nginx/general
+![jenkins_dockerhub.PNG](src/jenkins_dockerhub.PNG)
+
+Общая картина финальных подов:
+![app_pipe.PNG](src/app_pipe.PNG)
+
+---
+>## Что необходимо для сдачи задания?
+>
+>1. Репозиторий с конфигурационными файлами Terraform и готовность продемонстрировать создание всех ресурсов с нуля.
+>2. Пример pull request с комментариями созданными atlantis'ом или снимки экрана из Terraform Cloud.
+>3. Репозиторий с конфигурацией ansible, если был выбран способ создания Kubernetes кластера при помощи ansible.
+>4. Репозиторий с Dockerfile тестового приложения и ссылка на собранный docker image.
+>5. Репозиторий с конфигурацией Kubernetes кластера.
+>6. Ссылка на тестовое приложение и веб интерфейс Grafana с данными доступа.
+>7. Все репозитории рекомендуется хранить на одном ресурсе (github, gitlab)
+
+## - Допольнительные материалы
+
+Инсталляция jenkins в k8s с slave-агентами в подах 
+
+* Команды запуска
+[jenkins.sh](jenkins.kube/jenkins.sh)
+* Yamls
+https://github.com/aturganov/devops-diplom-yandexcloud/tree/main/jenkins.kube
