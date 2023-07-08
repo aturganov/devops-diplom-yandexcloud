@@ -149,7 +149,9 @@ stage prod manage (service)
       [kubespray](k8s/kubespray.yaml)
 
 Проверяем apply/destoy
+
 ![apply](src/apply.PNG)
+
 ![destroу](src/destoy.PNG)
 
 ```
@@ -586,4 +588,3 @@ https://www.jenkins.io/doc/pipeline/steps/docker-plugin/
 Возникает ошибка
 ![error_pod_docker.PNG](src/error_pod_docker.PNG)
 jenkins не входит в sudoer, чтобы баг превратить в фичу.
- 
