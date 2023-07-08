@@ -561,3 +561,20 @@ https://hub.docker.com/repository/docker/aturganov/app-nginx/general
 [jenkins.sh](jenkins.kube/jenkins.sh)
 * Yamls
 https://github.com/aturganov/devops-diplom-yandexcloud/tree/main/jenkins.kube
+
+Мастер под приложения
+![jenkins_master_pod.PNG](src/jenkins_master_pod.PNG)
+
+
+Приложение в кластере:
+http://51.250.103.200:32005/
+
+логин пароль
+admin Temp001
+
+В базовом под-агенте не встроен докер (что по идее видимо логично, ибо есть плагины, которые делают донастройку)
+![pod_agent_docker.PNG](src/pod_agent_docker.PNG)
+
+Не удивительно
+https://www.jenkins.io/doc/pipeline/steps/docker-plugin/
+![docker_plugin.PNG](src/docker_plugin.PNG)
