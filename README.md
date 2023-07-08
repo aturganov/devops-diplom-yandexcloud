@@ -525,7 +525,7 @@ admin Temp001
 * Креды GitHub (Api personal token), Github login/password, DockerHub login/password 
 ![jenkins_cred.PNG](src/jenkins_cred.PNG)
 * Подключаемся к API Github для интеграции pipline
-![jenkins_cred.PNG](src/jenkins_cred.PNG)
+![github_api.PNG](src/github_api.PNG)
 * Задаем ветку stage в проекте
 https://github.com/aturganov/dip_nginx/tree/stage
 * Создаем multibranche pipeline, лиметирируем отслеживаемые ветки Stage
