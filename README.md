@@ -565,6 +565,9 @@ https://github.com/aturganov/devops-diplom-yandexcloud/tree/main/jenkins.kube
 Мастер под приложения
 ![jenkins_master_pod.PNG](src/jenkins_master_pod.PNG)
 
+Запуск пайплайном пода slave агента в кубере
+![pod_agent_kube.PNG](src/pod_agent_kube.PNG)
+
 
 Приложение в кластере:
 http://51.250.103.200:32005/
