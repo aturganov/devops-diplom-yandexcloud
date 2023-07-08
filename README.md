@@ -581,3 +581,9 @@ admin Temp001
 Не удивительно
 https://www.jenkins.io/doc/pipeline/steps/docker-plugin/
 ![docker_plugin.PNG](src/docker_plugin.PNG)
+
+При добавление dockertools в jenkinsfile происходит досборка приложений в агенту, но пользовател jenkins не включен в докер группу.
+Возникает ошибка
+![error_pod_docker.PNG](src/error_pod_docker.PNG)
+jenkins не входит в sudoer, чтобы баг превратить в фичу.
+ 
