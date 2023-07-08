@@ -154,6 +154,7 @@ stage prod manage (service)
 
 ![destroу](src/destoy.PNG)
 
+
 ```
 locadm@netology01:~/git/devops-diplom-yandexcloud$ yc compute instance list
 +----------------------+-------------------+---------------+---------+----------------+---------------+
