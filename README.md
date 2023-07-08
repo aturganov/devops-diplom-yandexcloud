@@ -464,6 +464,7 @@ https://github.com/aturganov/devops-diplom-yandexcloud/tree/main/monitoring
 
 Можно использовать [teamcity](https://www.jetbrains.com/ru-ru/teamcity/), [jenkins](https://www.jenkins.io/), [GitLab CI](https://about.gitlab.com/stages-devops-lifecycle/continuous-integration/) или GitHub Actions.
 </details>
+
 >Ожидаемый результат:
 >
 >1. Интерфейс ci/cd сервиса доступен по http.
