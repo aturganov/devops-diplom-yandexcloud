@@ -313,7 +313,7 @@ https://hub.docker.com/repository/docker/aturganov/dip-nginx/general
 
 Альтернативный вариант:
 1. Для организации конфигурации можно использовать [helm charts](https://helm.sh/)
-</detail>
+</details>
 
 >Ожидаемый результат:
 >1. Git репозиторий с конфигурационными файлами для настройки Kubernetes.
