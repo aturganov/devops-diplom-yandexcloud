@@ -580,7 +580,7 @@ https://github.com/aturganov/devops-diplom-yandexcloud/tree/main/jenkins.kube
 Приложение в кластере:
 http://51.250.103.200:32005/
 
-логин пароль
+Логин/Пароль
 admin Temp001
 
 В базовом под-агенте не встроен докер (что по идее видимо логично, ибо есть плагины, которые делают донастройку)
@@ -594,6 +594,15 @@ https://www.jenkins.io/doc/pipeline/steps/docker-plugin/
 Возникает ошибка
 ![error_pod_docker.PNG](src/error_pod_docker.PNG)
 jenkins не входит в sudoer, чтобы баг превратить в фичу.
+
+Проект git
+
+https://github.com/aturganov/dip_nginx
+
+jenkinsfile
+
+https://github.com/aturganov/dip_nginx/blob/master/Jenkinsfile
+
 
 Финальный пайп с запуском агента в кластере
 
