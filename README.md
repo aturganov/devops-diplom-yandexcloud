@@ -394,6 +394,7 @@ locadm@netology01:~/git/devops-diplom-yandexcloud/terraform$ kubectl get secret 
 prom-operator
 ```
 Хост Grafana
+http://51.250.103.200:32000/d/200ac8fdbfbb74b39aff88118e4d1c2c/kubernetes-compute-resources-node-pods?orgId=1&refresh=10s
 http://51.250.103.200:32000/
 
 Логин/Пароль
