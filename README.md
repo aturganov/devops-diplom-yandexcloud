@@ -594,3 +594,9 @@ https://www.jenkins.io/doc/pipeline/steps/docker-plugin/
 Возникает ошибка
 ![error_pod_docker.PNG](src/error_pod_docker.PNG)
 jenkins не входит в sudoer, чтобы баг превратить в фичу.
+
+Финальный пайп с запуском агента в кластере
+
+![pod_agent_pipe_2.PNG](src/pod_agent_pipe_2.PNG)
+
+![pod_agent_pipe_text.PNG](src/pod_agent_pipe_text.PNG)
