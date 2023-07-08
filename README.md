@@ -548,7 +548,7 @@ https://hub.docker.com/repository/docker/aturganov/app-nginx/general
 ![jenkins_dockerhub.PNG](src/jenkins_dockerhub.PNG)
 
 Общая картина финальных подов:
-![app_pipe.PNG](src/app_pipe.PNG)
+![final_pods.PNG](src/final_pods.PNG)
 
 ---
 >## Что необходимо для сдачи задания?
