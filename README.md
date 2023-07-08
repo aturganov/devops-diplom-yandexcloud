@@ -203,7 +203,7 @@ ansible-playbook ~/kubespray/cluster.yml -i ~/kubespray/inventory/mycluster/inve
 locadm@netology01:~/git/devops-diplom-yandexcloud$ kubectl cluster-info
 Kubernetes control plane is running at https://51.250.103.200:6443
 ```
-Внешние подключение
+Проверяем внешние подключение
 ![k8s_cluster_info.PNG](src/k8s_cluster_info.PNG)
 
 Поды:
