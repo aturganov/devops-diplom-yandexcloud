@@ -79,7 +79,6 @@ http://51.250.107.10:8080/job/test-tags/indexing/events
 http://51.250.107.10:8080/job/test-tags/job/master/
 
 
-![Dep_non.PNG](src2/Dep_non.PNG)
 
 ---
 
