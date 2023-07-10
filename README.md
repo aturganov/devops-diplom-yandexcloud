@@ -15,7 +15,7 @@ admin Temp001
 ![webhook_githun.PNG](src2/webhook_githun.PNG)
 
 Донастраиваем настройку в jenkins item - слушателя тагов 
-![Discover_tags.PNG](Discover_tags.PNG)
+![Discover_tags.PNG](src2/Discover_tags.PNG)
 
 Теперь таги будут слушаться в Github и автоматически запускать обработку. Но можно на ветке также запустить pipe (без deploy). 
 
