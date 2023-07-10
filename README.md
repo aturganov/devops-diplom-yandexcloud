@@ -40,7 +40,7 @@ To github.com:aturganov/dip_nginx.git
  * [new tag]         v0.1.7 -> v0.1.7
 ```
 
-Проставился tag приложении
+Проставился tag в приложении
 http://51.250.103.200:31005/
 
 ![pic_tag.PNG](src2/pic_tag.PNG)
