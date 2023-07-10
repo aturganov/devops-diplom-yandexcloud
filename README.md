@@ -55,7 +55,7 @@ Pipe:
 Через вэбхук был получено событие о создании тага и обработано автоматическом режиме
 http://51.250.107.10:8080/job/test-tags/indexing/events
 
-![WebhookPNG.PNG](src2/webhook_githun.PNG)
+
 ![Tags17.PNG](src2/Tags17.PNG)
 
 Деплоймент прошел
