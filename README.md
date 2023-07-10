@@ -1,3 +1,85 @@
+
+# Доработка в практикума 
+### Задача
+Нужно доработать один момент: деплоить приложение только при создании git-тега. Это условие можно проверить в Jenkinsfile (предпочтительно) или в скрипте пайплайна (запасной вариант, похуже).
+
+### Решение
+Создаем item в Jenkins
+
+http://51.250.107.10:8080/
+admin Temp001
+
+![src2_1.PNG](src2/src2_1.PNG)
+
+Добавляем Webhook в Github, чтобы передавать события создания tag и соmments.
+![webhook_githun.PNG](src2/webhook_githun.PNG)
+
+Донастраиваем настройку в jenkins item - слушателя тагов 
+![Discover_tags.PNG](Discover_tags.PNG)
+
+Теперь таги будут слушаться в Github и автоматически запускать обработку. Но можно на ветке также запустить pipe (без deploy). 
+
+Дописываем jenkins, исходя из концепции, что деплой производится только в результате фиксации tag.
+См. концепцию Jenkins
+https://www.jenkins.io/blog/2018/05/16/pipelines-with-git-tags/
+
+### Результаты:
+
+Файл Jenkinsfile:
+https://github.com/aturganov/dip_nginx/blob/master/Jenkinsfile
+
+Запуск tag
+```
+git tag -a "v0.1.7" -m "v0.1.7"
+locadm@netology01:~/git/dip_nginx$ git push origin 'v0.1.7'
+Enumerating objects: 1, done.
+Counting objects: 100% (1/1), done.
+Writing objects: 100% (1/1), 151 bytes | 75.00 KiB/s, done.
+Total 1 (delta 0), reused 0 (delta 0)
+To github.com:aturganov/dip_nginx.git
+ * [new tag]         v0.1.7 -> v0.1.7
+```
+
+Проставился tag приложении
+http://51.250.103.200:31005/
+
+![pic_tag.PNG](src2/pic_tag.PNG)
+
+Таг 
+https://github.com/aturganov/dip_nginx/releases/tag/v0.1.7
+
+Dockerhub
+https://hub.docker.com/layers/aturganov/app-nginx/jenkins-test-tags-v0.1.7-1/images/sha256-103b26073c7446d475577a416b57f30d0d14addf7325329a55e6bdd60a4bbe86?context=repo
+
+Pipe:
+Через вэбхук был получено событие о создании тага и обработано автоматическом режиме
+http://51.250.107.10:8080/job/test-tags/indexing/events
+
+![WebhookPNG.PNG](src2/webhook_githun.PNG)
+![Tags17.PNG](src2/Tags17.PNG)
+
+Деплоймент прошел
+![Deploy.PNG](src2/Deploy.PNG)
+
+
+Теперь проверяем, что пайп по ветке не будет проводить деплоймент. Jenkins отследит источник, создаст контейнер, но не проведет дейплоймент.
+![Dep_non.PNG](src2/Dep_non.PNG)
+
+Отработало условие Jenkinsfile:
+```
+...
+    stage('Deploy app to k8s') {
+      when {
+        expression { env.TAG_NAME != null }
+      }
+...      
+```
+При этом докерфайл создан
+![Dep_non.PNG](src2/Dep_non.PNG)
+
+---
+
+
 # Дипломный практикум в Yandex.Cloud
   * [Цели:](#цели)
   * [Этапы выполнения:](#этапы-выполнения)
