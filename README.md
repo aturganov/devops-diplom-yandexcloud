@@ -53,9 +53,11 @@ https://hub.docker.com/layers/aturganov/app-nginx/jenkins-test-tags-v0.1.7-1/ima
 
 Pipe:
 Через вэбхук был получено событие о создании тага и обработано автоматическом режиме
+
 http://51.250.107.10:8080/job/test-tags/indexing/events
+![event.PNG](src2/event.PNG)
 
-
+Таг v0.1.17
 ![Tags17.PNG](src2/Tags17.PNG)
 
 Деплоймент прошел
